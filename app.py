@@ -556,7 +556,15 @@ def main() -> None:
     )
 
     if source_mode == "Использовать демо-выгрузку":
-        raw_df = cached_load_csv(str(DEFAULT_CSV_PATH))
+        if DEFAULT_CSV_PATH.exists():
+            raw_df = cached_load_csv(str(DEFAULT_CSV_PATH))
+        else:
+            st.warning("Демо-файл не найден в репозитории. Загрузите CSV-файл через боковую панель.")
+            uploaded = st.sidebar.file_uploader("CSV-файл с выгрузкой звонков", type=["csv"])
+            if uploaded is None:
+                st.info("Загрузите CSV-файл, чтобы построить дашборд.")
+                return
+            raw_df = cached_load_csv(uploaded.getvalue())
     else:
         uploaded = st.sidebar.file_uploader("CSV-файл с выгрузкой звонков", type=["csv"])
         if uploaded is None:
